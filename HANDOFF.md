@@ -17,7 +17,7 @@
 - Plantillas de exportación web de Godot 4.7.2 instaladas en `~/.local/share/godot/export_templates/4.7.2.stable/` (solo las web).
 
 ## Pendiente / siguiente paso
-1. **Luis: conectar el formulario.** FormSubmit se abandonó (no activaba y exponía el correo). Publicar `tools/formulario/Code.gs` como aplicación web de Google Apps Script con la cuenta que recibe los mensajes (pasos en `tools/formulario/README.md`) y poner su URL en `FORM_URL` de `index.html`. Hasta entonces el formulario muestra «No se ha podido enviar».
+1. ~~Conectar el formulario.~~ Hecho (31/10/2026): `tools/formulario/Code.gs` publicado como aplicación web de Google Apps Script desde la cuenta que recibe los mensajes; su URL está en `FORM_URL` de `index.html`. Para cambiar el script: Implementar → Gestionar implementaciones → editar → Nueva versión (la URL se mantiene).
 2. **Luis: guardar la intranet en GitHub.** No se pudo crear el repo privado `menger-studio-intranet` (lo bloqueó el modo automático). Crear a mano o decidir dónde va.
 3. FractalBlast web muestra el botón «DBG» del panel de depuración; habría que ocultarlo en exportaciones release (cambio en el repo de FractalBlast).
 4. Vídeo de Narthex con la AR real: grabar la pantalla del Pixel 9a (`adb shell screenrecord`) y sustituir `video/narthex.mp4`.
