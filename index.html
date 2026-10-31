@@ -301,7 +301,8 @@ footer .flags button[aria-current="true"], footer .flags button:hover { opacity:
 <script>
 (() => {
 "use strict";
-const FORM_URL = "https://formsubmit.co/ajax/mengerstudio@gmail.com";
+// URL de la aplicación web de Google Apps Script (tools/formulario). Vacía = formulario sin conectar.
+const FORM_URL = "";
 const SITE = "https://meng3r-studio.github.io/";
 const REL = "https://github.com/mengerspong3/menger-studio-builds/releases/download/v2026.10.31/";
 
@@ -575,10 +576,11 @@ async function send(fields, honey, msgSel) {
   if (honey) { setMsg(msgSel, t("sent"), "ok"); return true; }
   setMsg(msgSel, t("sending"));
   try {
-    const r = await fetch(FORM_URL, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
-      body: JSON.stringify({ ...fields, idioma: lang, _template: "table", _captcha: "false" }) });
+    if (!FORM_URL) throw new Error("formulario sin conectar");
+    // Cuerpo en texto plano para que el navegador no haga petición previa (Apps Script no la admite)
+    const r = await fetch(FORM_URL, { method: "POST", body: JSON.stringify({ ...fields, idioma: lang }) });
     const j = await r.json().catch(() => ({}));
-    if (r.ok && String(j.success) !== "false") { setMsg(msgSel, t("sent"), "ok"); return true; }
+    if (r.ok && j.ok) { setMsg(msgSel, t("sent"), "ok"); return true; }
     throw new Error(j.message || r.status);
   } catch (err) { setMsg(msgSel, t("failed"), "err"); return false; }
 }

@@ -8,6 +8,6 @@ Escaparate abierto de los juegos de Menger Studio: https://meng3r-studio.github.
 - `play/fractalblast/`: FractalBlast exportado a web con Godot 4.7.2 (sin hilos, para GitHub Pages).
 - `tools/grabar/`: cómo se grabaron los vídeos (ver `HANDOFF.md`).
 
-El feedback se envía con FormSubmit.co a mengerstudio@gmail.com. Los ejecutables están en [menger-studio-builds](https://github.com/mengerspong3/menger-studio-builds/releases).
+El feedback se envía a un script de Google Apps Script que lo reenvía por correo (ver `tools/formulario/`). Los ejecutables están en [menger-studio-builds](https://github.com/mengerspong3/menger-studio-builds/releases).
 
 Sin publicidad, sin cookies, sin analítica.
