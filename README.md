@@ -1,6 +1,6 @@
 # Menger Studio · web pública (en pruebas)
 
-Escaparate abierto de los juegos de Menger Studio: https://mengerspong3.github.io/menger-studio/
+Escaparate abierto de los juegos de Menger Studio: https://meng3r-studio.github.io/
 
 - `index.html`: la web entera (HTML + CSS + JS, sin compilación). 7 idiomas.
 - `img/`: carátulas y banners (generados con `tools/caratulas.py`).

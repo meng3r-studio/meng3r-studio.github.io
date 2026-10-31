@@ -3,7 +3,7 @@
 Última actualización: 31-10-2026 · Equipo: gargamel
 
 ## Estado actual
-- **Web pública (en pruebas):** https://mengerspong3.github.io/menger-studio/ (este repo, GitHub Pages desde `main` /). Verificada en móvil (375 px) y escritorio (1280 px), 7 idiomas, sin scroll lateral.
+- **Web pública (en pruebas):** https://meng3r-studio.github.io/ (repo `meng3r-studio/meng3r-studio.github.io`, GitHub Pages desde `main` /; copiada de `mengerspong3/menger-studio`). Verificada en móvil (375 px) y escritorio (1280 px), 7 idiomas, sin scroll lateral.
   - 4 juegos con carátula, vídeo corto de gameplay, «Pruébalo» con QR y opinión con caritas. Sin créditos ni licencias, sin enlaces a repos privados, sin publicidad ni cookies. Aviso «BETA» arriba.
   - FractalBlast jugable en `play/fractalblast/` (export web de Godot 4.7.2, sin hilos). Probado: arranca en móvil.
   - Descargas: Rodamons Linux y APK de Narthex desde la release de `mengerspong3/menger-studio-builds`.
