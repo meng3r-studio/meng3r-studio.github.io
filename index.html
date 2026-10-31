@@ -1,0 +1,641 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Menger Studio</title>
+<meta name="description" content="Menger Studio: juegos pequeños hechos en casa. Web en pruebas.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#07080f">
+<meta property="og:title" content="Menger Studio">
+<meta property="og:description" content="Juegos pequeños hechos en casa. Pruébalos y cuéntanos qué te parecen.">
+<meta property="og:image" content="img/rodamons-banner.webp">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 9 9'%3E%3Cpath fill='%23ffb547' d='M0 0h9v9H0z'/%3E%3Cpath fill='%2307080f' d='M3 3h3v3H3z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Figtree:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+/* Layout: aviso beta → barra → escaparate con vídeo → estantería 2:3 → buzón; la ficha es una capa a pantalla completa. */
+:root {
+  --ink: #07080f; --deck: #10121f; --deck-2: #181b2e; --line: #262a46;
+  --text: #eceeff; --muted: #8d93bd; --amber: #ffb547; --cyan: #63e6ff; --good: #6ff2a4; --cone: #ff7a29;
+  --display: "Unbounded", "Arial Black", system-ui, sans-serif;
+  --body: "Figtree", "Segoe UI", system-ui, sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, "DejaVu Sans Mono", monospace;
+  --r: 14px;
+  --gut: max(16px, env(safe-area-inset-left, 0px));
+  --gut-r: max(16px, env(safe-area-inset-right, 0px));
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html { background: var(--ink); }
+body { margin: 0; background: var(--ink); color: var(--text); font: 400 16px/1.5 var(--body); -webkit-font-smoothing: antialiased; overflow-x: hidden; padding-top: env(safe-area-inset-top, 0px); }
+img, video { max-width: 100%; }
+[hidden] { display: none !important; }
+a { color: inherit; }
+button { font: inherit; color: inherit; }
+:focus-visible { outline: 2px solid var(--cyan); outline-offset: 3px; border-radius: 6px; }
+.wrap { max-width: 1240px; margin: 0 auto; padding-left: var(--gut); padding-right: var(--gut-r); }
+.ico { width: 1.15em; height: 1.15em; flex: none; stroke: currentColor; fill: none; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: -0.2em; }
+.sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+/* aviso de pruebas */
+.beta { background: repeating-linear-gradient(-45deg, #2a1a05 0 12px, #1f1304 12px 24px); border-bottom: 1px solid #5a3a0c; color: #ffd9a6; font-size: 13px; }
+.beta .wrap { display: flex; align-items: center; gap: 10px; padding-block: 8px; }
+.beta b { font: 700 11px var(--display); letter-spacing: .1em; background: var(--amber); color: #241400; padding: 3px 7px; border-radius: 5px; flex: none; }
+
+/* barra */
+.bar { position: sticky; top: 0; z-index: 50; background: color-mix(in srgb, var(--ink) 82%, transparent); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+.bar .wrap { display: flex; align-items: center; gap: 16px; height: 60px; }
+.brand { display: flex; align-items: center; gap: 10px; text-decoration: none; margin-right: auto; }
+.brand svg { width: 28px; height: 28px; }
+.brand b { font: 800 14px/1 var(--display); letter-spacing: .14em; }
+.brand b span { color: var(--amber); }
+.nav { display: flex; gap: 4px; }
+.nav a { display: flex; align-items: center; gap: 8px; text-decoration: none; padding: 8px 12px; border-radius: 999px; color: var(--muted); font-weight: 600; font-size: 14px; }
+.nav a:hover { color: var(--text); background: var(--deck-2); }
+.lang { position: relative; }
+.lang > button { display: flex; align-items: center; gap: 8px; background: var(--deck); border: 1px solid var(--line); border-radius: 999px; padding: 6px 10px 6px 7px; cursor: pointer; font-weight: 600; font-size: 13px; }
+.flag { width: 24px; height: 16px; border-radius: 3px; overflow: hidden; flex: none; display: block; box-shadow: 0 0 0 1px rgba(255,255,255,.12); }
+.lang ul { position: absolute; right: 0; top: calc(100% + 8px); list-style: none; margin: 0; padding: 6px; background: var(--deck); border: 1px solid var(--line); border-radius: 12px; min-width: 180px; box-shadow: 0 20px 50px rgba(0,0,0,.5); z-index: 60; }
+.lang li button { width: 100%; display: flex; align-items: center; gap: 10px; background: none; border: 0; padding: 9px 10px; border-radius: 8px; cursor: pointer; text-align: left; font-size: 14px; }
+.lang li button:hover, .lang li button[aria-current="true"] { background: var(--deck-2); }
+.lang li button[aria-current="true"]::after { content: "●"; margin-left: auto; color: var(--amber); font-size: 9px; }
+@media (max-width: 720px) { .nav { display: none; } .lang .lname { display: none; } }
+
+/* escaparate */
+.hero { padding-block: 20px 8px; }
+.stage { position: relative; }
+.frame { position: relative; border-radius: 22px; overflow: hidden; aspect-ratio: 2 / 1; max-width: 100%; background: var(--deck); border: 1px solid var(--line); }
+.slide { position: absolute; inset: 0; opacity: 0; transition: opacity .7s ease, transform 6s ease; transform: scale(1.04); }
+.slide.on { opacity: 1; transform: scale(1); }
+.slide img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.frame::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, rgba(7,8,15,.92) 0%, rgba(7,8,15,0) 42%); pointer-events: none; }
+.stage-ui { position: absolute; left: 0; right: 0; bottom: 0; z-index: 2; display: flex; align-items: flex-end; gap: 16px; padding: 22px 24px; flex-wrap: wrap; }
+.stage-ui .who { margin-right: auto; display: grid; gap: 8px; min-width: 0; }
+.chips { display: flex; gap: 6px; flex-wrap: wrap; }
+.chip { display: inline-flex; align-items: center; gap: 6px; font: 600 12px/1 var(--body); padding: 6px 10px; border-radius: 999px; background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.12); backdrop-filter: blur(6px); white-space: nowrap; }
+.chip.hot { background: color-mix(in srgb, var(--amber) 20%, transparent); border-color: color-mix(in srgb, var(--amber) 45%, transparent); color: #ffe0ad; }
+.chip.stage-chip { background: color-mix(in srgb, var(--cyan) 14%, transparent); border-color: color-mix(in srgb, var(--cyan) 40%, transparent); color: #c8f6ff; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 0; cursor: pointer; text-decoration: none; font: 700 14px/1 var(--body); padding: 13px 18px; border-radius: 999px; background: var(--text); color: var(--ink); white-space: nowrap; }
+.btn:hover { background: #fff; }
+.btn.ghost { background: rgba(255,255,255,.08); color: var(--text); border: 1px solid rgba(255,255,255,.18); }
+.btn.ghost:hover { background: rgba(255,255,255,.14); }
+.btn.amber { background: var(--amber); color: #241400; }
+.btn:disabled { opacity: .5; cursor: default; }
+.dots { position: absolute; top: 16px; right: 18px; z-index: 2; display: flex; gap: 6px; }
+.dots button { width: 26px; height: 4px; border: 0; padding: 0; border-radius: 4px; background: rgba(255,255,255,.3); cursor: pointer; }
+.dots button.on { background: var(--amber); }
+@media (max-width: 640px) {
+  .frame { border-radius: 16px; }
+  .frame::after { background: linear-gradient(0deg, rgba(7,8,15,.5) 0%, rgba(7,8,15,0) 30%); }
+  .stage-ui { position: static; padding: 12px 0 0; gap: 10px; flex-wrap: nowrap; align-items: center; }
+  .dots { top: 10px; right: 12px; }
+}
+
+/* secciones */
+.sec { padding-block: 36px 8px; }
+.sec-h { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; }
+.sec-h .badge { width: 38px; height: 38px; border-radius: 11px; display: grid; place-items: center; background: var(--deck-2); border: 1px solid var(--line); color: var(--amber); }
+.sec-h .badge .ico { width: 20px; height: 20px; }
+.sec-h h2 { font: 700 clamp(18px, 2.4vw, 22px)/1.1 var(--display); margin: 0; text-wrap: balance; }
+.sec-h p { margin: 0 0 0 auto; color: var(--muted); font-size: 14px; }
+
+/* estantería */
+.shelf { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; }
+@media (max-width: 900px) { .shelf { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; } }
+.card { position: relative; display: block; border-radius: var(--r); overflow: hidden; aspect-ratio: 2 / 3; max-width: 100%; background: var(--deck); border: 1px solid var(--line); transition: transform .25s ease, box-shadow .25s ease, border-color .25s; cursor: pointer; padding: 0; width: 100%; }
+.card img, .card video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; display: block; }
+.card video { opacity: 0; transition: opacity .3s; }
+.card.playing video { opacity: 1; }
+.card:hover, .card:focus-visible { transform: translateY(-6px); box-shadow: 0 22px 50px -18px var(--glow); border-color: color-mix(in srgb, var(--glow) 60%, transparent); }
+.card .meta { position: absolute; inset: auto 0 0 0; padding: 40px 12px 12px; display: flex; align-items: center; gap: 8px; background: linear-gradient(0deg, rgba(7,8,15,.95), rgba(7,8,15,0)); }
+.card .meta .plats { display: flex; gap: 6px; color: var(--muted); margin-left: auto; }
+.card .try { font: 700 11px var(--body); padding: 5px 9px; border-radius: 999px; background: var(--good); color: #062512; display: inline-flex; gap: 5px; align-items: center; }
+.card .try.soon { background: rgba(255,255,255,.1); color: var(--muted); }
+
+/* buzón */
+.fb-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+@media (max-width: 760px) { .fb-grid { grid-template-columns: 1fr; } }
+.fb-pick { display: flex; align-items: center; gap: 16px; padding: 20px; border-radius: 18px; border: 1px solid var(--line); background: var(--deck); cursor: pointer; text-align: left; transition: border-color .2s, background .2s; }
+.fb-pick:hover { border-color: #3a3f66; }
+.fb-pick[aria-pressed="true"] { border-color: var(--amber); background: color-mix(in srgb, var(--amber) 8%, var(--deck)); }
+.fb-pick .big { width: 50px; height: 50px; border-radius: 15px; display: grid; place-items: center; flex: none; }
+.fb-pick .big .ico { width: 26px; height: 26px; }
+.fb-pick b { display: block; font: 700 15px/1.2 var(--display); }
+.fb-pick small { color: var(--muted); font-size: 14px; }
+form.fb { margin-top: 16px; padding: 20px; border-radius: 18px; background: var(--deck); border: 1px solid var(--line); display: grid; gap: 14px; }
+.row2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+@media (max-width: 640px) { .row2 { grid-template-columns: 1fr; } }
+label.f { display: grid; gap: 6px; font-size: 13px; font-weight: 600; color: var(--muted); }
+.f input, .f select, .f textarea { width: 100%; background: var(--ink); color: var(--text); border: 1px solid var(--line); border-radius: 10px; padding: 12px; font: 400 16px/1.4 var(--body); }
+.f textarea { min-height: 110px; resize: vertical; }
+.f input:focus, .f select:focus, .f textarea:focus { outline: none; border-color: var(--cyan); }
+.acts { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.msg { font-size: 14px; color: var(--muted); }
+.msg.ok { color: var(--good); }
+.msg.err { color: #ff9b8a; }
+.honey { position: absolute; left: -5000px; }
+.privacy { font-size: 12.5px; color: var(--muted); margin: 0; }
+
+footer { margin-top: 56px; border-top: 1px solid var(--line); padding-block: 26px 40px; color: var(--muted); font-size: 13px; padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px)); }
+footer .wrap { display: flex; gap: 14px 18px; flex-wrap: wrap; align-items: center; }
+footer .flags { display: flex; gap: 6px; margin-left: auto; }
+footer .flags button { background: none; border: 0; padding: 3px; cursor: pointer; border-radius: 5px; opacity: .55; }
+footer .flags button[aria-current="true"], footer .flags button:hover { opacity: 1; }
+
+/* ficha */
+.sheet { position: fixed; inset: 0; z-index: 80; background: var(--ink); overflow-y: auto; overscroll-behavior: contain; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+.sheet .close { position: fixed; top: calc(14px + env(safe-area-inset-top, 0px)); right: calc(14px + env(safe-area-inset-right, 0px)); z-index: 5; width: 44px; height: 44px; border-radius: 50%; border: 1px solid rgba(255,255,255,.2); background: rgba(7,8,15,.7); backdrop-filter: blur(8px); cursor: pointer; display: grid; place-items: center; }
+.backdrop { position: relative; height: clamp(160px, 30vw, 360px); overflow: hidden; }
+.backdrop img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.backdrop::after { content: ""; position: absolute; inset: 0; background: linear-gradient(0deg, var(--ink) 0%, rgba(7,8,15,.55) 50%, rgba(7,8,15,.1) 100%); }
+.head { display: grid; grid-template-columns: 200px minmax(0, 1fr); gap: 28px; margin-top: -120px; position: relative; z-index: 2; }
+.head .poster { grid-row: span 2; width: 100%; aspect-ratio: 2 / 3; max-width: 100%; border-radius: var(--r); overflow: hidden; border: 1px solid var(--line); box-shadow: 0 30px 60px -20px rgba(0,0,0,.8); }
+.head .poster img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.head h1 { font: 800 clamp(28px, 5vw, 50px)/1 var(--display); margin: 60px 0 12px; text-wrap: balance; }
+.head .lead { grid-column: 2; align-self: start; font-size: 18px; color: #c8ccef; max-width: 60ch; margin: 0; }
+@media (max-width: 700px) {
+  .head { grid-template-columns: 110px minmax(0, 1fr); gap: 16px; margin-top: -70px; }
+  .head .poster { grid-row: auto; }
+  .head h1 { margin-top: 40px; font-size: 26px; }
+  .head .lead { grid-column: 1 / -1; font-size: 16px; }
+}
+.blocks { display: grid; grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 18px; margin-top: 30px; }
+.blk { grid-column: span 6; background: var(--deck); border: 1px solid var(--line); border-radius: 18px; padding: 20px; min-width: 0; }
+.blk.wide { grid-column: 1 / -1; }
+@media (max-width: 900px) { .blk { grid-column: 1 / -1; } }
+.blk h3 { display: flex; align-items: center; gap: 10px; font: 700 15px/1.2 var(--display); margin: 0 0 16px; }
+.blk h3 .ico { color: var(--amber); width: 20px; height: 20px; }
+.blk h3 small { margin-left: auto; font: 500 11px var(--mono); color: var(--muted); }
+.player { display: grid; place-items: center; background: #000; border-radius: 12px; overflow: hidden; }
+.player video { display: block; width: 100%; max-height: 70vh; object-fit: contain; }
+.player.tall video { width: auto; height: min(70vh, 640px); max-width: 100%; }
+.demos { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 220px), 1fr)); gap: 14px; }
+.demo { border: 1px solid var(--line); border-radius: 14px; padding: 16px; display: grid; gap: 12px; align-content: start; background: var(--deck-2); min-width: 0; }
+.demo .top { display: flex; align-items: center; gap: 10px; font-weight: 700; }
+.demo .top .ico { width: 22px; height: 22px; color: var(--cyan); }
+.demo .qr { background: #fff; border-radius: 10px; padding: 10px; width: 148px; max-width: 100%; aspect-ratio: 1; display: grid; place-items: center; justify-self: center; }
+.demo .qr img, .demo .qr canvas { width: 100% !important; height: auto !important; display: block; }
+.demo .warn { font-size: 12.5px; color: #ffd9a6; display: flex; gap: 6px; }
+.demo .warn .ico { color: var(--amber); margin-top: 2px; }
+.demo.soon { background: repeating-linear-gradient(-45deg, rgba(255,122,41,.06) 0 14px, transparent 14px 28px), var(--deck-2); border-style: dashed; }
+.demo.soon .top .ico { color: var(--muted); }
+.demo.soon .cone { width: 64px; height: 64px; justify-self: center; }
+.demo.soon .lbl { justify-self: center; font: 700 12px var(--display); letter-spacing: .06em; color: var(--cone); text-transform: uppercase; }
+.rate { display: flex; gap: 8px; flex-wrap: wrap; }
+.rate button { width: 52px; height: 52px; border-radius: 14px; border: 1px solid var(--line); background: var(--deck-2); cursor: pointer; display: grid; place-items: center; }
+.rate button svg { width: 30px; height: 30px; }
+.rate button[aria-pressed="true"] { border-color: var(--amber); background: color-mix(in srgb, var(--amber) 14%, var(--deck-2)); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { transition: none !important; animation: none !important; } }
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="i-pad" viewBox="0 0 24 24"><path d="M6 11h4M8 9v4M15 12h.01M18 10h.01"/><path d="M17.3 5H6.7a4 4 0 0 0-4 3.6l-.7 6.9A3 3 0 0 0 5 19c1 0 1.9-.6 2.4-1.4L9 15h6l1.6 2.6c.5.8 1.4 1.4 2.4 1.4a3 3 0 0 0 3-3.5l-.7-6.9A4 4 0 0 0 17.3 5z"/></symbol>
+    <symbol id="i-play" viewBox="0 0 24 24"><path d="M7 4.5v15l12-7.5z"/></symbol>
+    <symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></symbol>
+    <symbol id="i-film" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 3v18M17 3v18M3 8h4M3 16h4M17 8h4M17 16h4"/></symbol>
+    <symbol id="i-wrench" viewBox="0 0 24 24"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.8-3.8a6 6 0 0 1-7.9 7.9l-6.9 6.9a2.1 2.1 0 0 1-3-3l6.9-6.9a6 6 0 0 1 7.9-7.9z"/></symbol>
+    <symbol id="i-bulb" viewBox="0 0 24 24"><path d="M9 18h6M10 22h4"/><path d="M12 2a7 7 0 0 0-4 12.7c.6.5 1 1.3 1 2.3h6c0-1 .4-1.8 1-2.3A7 7 0 0 0 12 2z"/></symbol>
+    <symbol id="i-rocket" viewBox="0 0 24 24"><path d="M4.5 16.5c-1.5 1.3-2 5-2 5s3.7-.5 5-2c.7-.8.7-2.1-.1-2.9a2.2 2.2 0 0 0-2.9-.1z"/><path d="M12 15l-3-3a22 22 0 0 1 2-3.9A12.9 12.9 0 0 1 22 2c0 2.7-.8 7.5-6 11a22.4 22.4 0 0 1-4 2z"/><path d="M9 12H4s.6-3 2-4c1.6-1.1 5 0 5 0M12 15v5s3-.6 4-2c1.1-1.6 0-5 0-5"/></symbol>
+    <symbol id="i-msg" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></symbol>
+    <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></symbol>
+    <symbol id="i-term" viewBox="0 0 24 24"><rect x="2.5" y="4" width="19" height="16" rx="2"/><path d="M7 9l3 3-3 3M13 15h4"/></symbol>
+    <symbol id="i-win" viewBox="0 0 24 24"><path d="M3 5.5 10.5 4.5v7H3zM13 4.2 21 3v8.5h-8zM3 13h7.5v7L3 19zM13 13h8v8l-8-1.2z"/></symbol>
+    <symbol id="i-droid" viewBox="0 0 24 24"><path d="M5 16V10a7 7 0 0 1 14 0v6H5z"/><path d="M8 3.5l1.5 2.5M16 3.5 14.5 6"/><circle cx="9.5" cy="10.5" r=".6"/><circle cx="14.5" cy="10.5" r=".6"/><path d="M7.5 16v3.5M16.5 16v3.5"/></symbol>
+    <symbol id="i-phone" viewBox="0 0 24 24"><rect x="6" y="2.5" width="12" height="19" rx="2.5"/><path d="M11 18.5h2"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+    <symbol id="i-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/><path d="M12 9v4M12 17h.01"/></symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+    <symbol id="i-flask" viewBox="0 0 24 24"><path d="M9 3h6M10 3v6L4.5 18.5A2 2 0 0 0 6.2 21.5h11.6a2 2 0 0 0 1.7-3L14 9V3"/><path d="M7 15h10"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8" r="4"/><path d="M2 21v-1a6 6 0 0 1 12 0v1M16 3.5a4 4 0 0 1 0 8M22 21v-1a6 6 0 0 0-4-5.6"/></symbol>
+    <symbol id="f1" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="#ff8a7a" stroke="none"/><circle cx="11.5" cy="13" r="1.8" fill="#07080f" stroke="none"/><circle cx="20.5" cy="13" r="1.8" fill="#07080f" stroke="none"/><path d="M10.5 23c3-3.5 8-3.5 11 0" stroke="#07080f" stroke-width="2" fill="none"/></symbol>
+    <symbol id="f2" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="#ffb27a" stroke="none"/><circle cx="11.5" cy="13" r="1.8" fill="#07080f" stroke="none"/><circle cx="20.5" cy="13" r="1.8" fill="#07080f" stroke="none"/><path d="M11 22c3-1.5 7-1.5 10 0" stroke="#07080f" stroke-width="2" fill="none"/></symbol>
+    <symbol id="f3" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="#ffd66b" stroke="none"/><circle cx="11.5" cy="13" r="1.8" fill="#07080f" stroke="none"/><circle cx="20.5" cy="13" r="1.8" fill="#07080f" stroke="none"/><path d="M11 21h10" stroke="#07080f" stroke-width="2" fill="none"/></symbol>
+    <symbol id="f4" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="#b6ec7a" stroke="none"/><circle cx="11.5" cy="13" r="1.8" fill="#07080f" stroke="none"/><circle cx="20.5" cy="13" r="1.8" fill="#07080f" stroke="none"/><path d="M11 20c3 2 7 2 10 0" stroke="#07080f" stroke-width="2" fill="none"/></symbol>
+    <symbol id="f5" viewBox="0 0 32 32"><circle cx="16" cy="16" r="13" fill="#6ff2a4" stroke="none"/><path d="M9.5 13.5c1-2 3-2 4 0M18.5 13.5c1-2 3-2 4 0" stroke="#07080f" stroke-width="2" fill="none"/><path d="M10 19h12c-1 4-4 5.5-6 5.5s-5-1.5-6-5.5z" fill="#07080f" stroke="none"/></symbol>
+    <symbol id="cone" viewBox="0 0 64 64"><path d="M26 6h12l12 46H14z" fill="#ff7a29" stroke="none"/><path d="M23.5 17h17l2.4 9.5H21.1zM19.4 33h25.2l2.5 9.5H16.9z" fill="#fff4e8" stroke="none"/><rect x="6" y="50" width="52" height="8" rx="2.5" fill="#ff7a29" stroke="none"/><rect x="6" y="56" width="52" height="2" rx="1" fill="#b84a12" stroke="none"/></symbol>
+  </defs>
+</svg>
+
+<div class="beta" role="note"><div class="wrap"><b>BETA</b><span data-t="beta"></span></div></div>
+
+<header class="bar">
+  <div class="wrap">
+    <a class="brand" href="#top" aria-label="Menger Studio">
+      <svg viewBox="0 0 27 27" aria-hidden="true" id="logo"></svg>
+      <b>MENGER<span>·</span>STUDIO</b>
+    </a>
+    <nav class="nav">
+      <a href="#juegos"><svg class="ico"><use href="#i-pad"/></svg><span data-t="navGames"></span></a>
+      <a href="#ideas"><svg class="ico"><use href="#i-bulb"/></svg><span data-t="navIdeas"></span></a>
+    </nav>
+    <div class="lang">
+      <button id="langBtn" aria-haspopup="listbox" aria-expanded="false"><span id="langFlag"></span><span class="lname" id="langName"></span><svg class="ico"><use href="#i-down"/></svg></button>
+      <ul id="langMenu" role="listbox" hidden></ul>
+    </div>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero wrap">
+    <div class="stage">
+      <div class="frame" id="stage"><div class="dots" id="dots"></div></div>
+      <div class="stage-ui">
+        <div class="who"><div class="chips" id="stageChips"></div></div>
+        <button class="btn" id="stageOpen"><svg class="ico"><use href="#i-play"/></svg><span data-t="open"></span></button>
+      </div>
+    </div>
+  </section>
+
+  <section class="sec wrap" id="juegos">
+    <div class="sec-h"><span class="badge"><svg class="ico"><use href="#i-pad"/></svg></span><h2 data-t="games"></h2><p data-t="gamesSub"></p></div>
+    <div class="shelf" id="shelf"></div>
+  </section>
+
+  <section class="sec wrap" id="ideas">
+    <div class="sec-h"><span class="badge"><svg class="ico"><use href="#i-bulb"/></svg></span><h2 data-t="fbTitle"></h2></div>
+    <div class="fb-grid">
+      <button class="fb-pick" data-kind="mecanica" aria-pressed="true">
+        <span class="big" style="background:color-mix(in srgb,var(--cyan) 14%,transparent);color:var(--cyan)"><svg class="ico"><use href="#i-wrench"/></svg></span>
+        <span><b data-t="fbMech"></b><small data-t="fbMechSub"></small></span>
+      </button>
+      <button class="fb-pick" data-kind="juego-nuevo" aria-pressed="false">
+        <span class="big" style="background:color-mix(in srgb,var(--amber) 14%,transparent);color:var(--amber)"><svg class="ico"><use href="#i-rocket"/></svg></span>
+        <span><b data-t="fbNew"></b><small data-t="fbNewSub"></small></span>
+      </button>
+    </div>
+    <form class="fb" id="ideaForm" novalidate>
+      <div class="row2">
+        <label class="f" id="ideaGameWrap"><span data-t="fGame"></span><select id="ideaGame"></select></label>
+        <label class="f"><span data-t="fName"></span><input id="ideaName" maxlength="60" autocomplete="nickname"></label>
+      </div>
+      <label class="f"><span data-t="fIdea"></span><textarea id="ideaText" maxlength="2000"></textarea></label>
+      <input class="honey" id="ideaHoney" tabindex="-1" autocomplete="off" aria-hidden="true">
+      <div class="acts">
+        <button class="btn amber" type="submit"><svg class="ico"><use href="#i-arrow"/></svg><span data-t="send"></span></button>
+        <span class="msg" id="ideaMsg" role="status"></span>
+      </div>
+      <p class="privacy" data-t="privacy"></p>
+    </form>
+  </section>
+</main>
+
+<footer>
+  <div class="wrap">
+    <span>© 2026 Menger Studio</span>
+    <span data-t="footer"></span>
+    <div class="flags" id="footFlags"></div>
+  </div>
+</footer>
+
+<div class="sheet" id="sheet" hidden role="dialog" aria-modal="true" aria-labelledby="sheetTitle">
+  <button class="close" id="sheetClose"><svg class="ico"><use href="#i-x"/></svg><span class="sr" data-t="close"></span></button>
+  <div id="sheetBody"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+(() => {
+"use strict";
+const FORM_URL = "https://formsubmit.co/ajax/mengerstudio@gmail.com";
+const SITE = "https://mengerspong3.github.io/menger-studio/";
+const REL = "https://github.com/mengerspong3/menger-studio-builds/releases/download/v2026.10.31/";
+
+const LANGS = [["es","Español"],["en","English"],["ca","Català"],["fr","Français"],["de","Deutsch"],["it","Italiano"],["pt","Português"]];
+const FLAGS = {
+  es: '<svg class="flag" viewBox="0 0 30 20"><rect width="30" height="20" fill="#c60b1e"/><rect y="5" width="30" height="10" fill="#ffc400"/></svg>',
+  en: '<svg class="flag" viewBox="0 0 60 40"><rect width="60" height="40" fill="#012169"/><path d="M0 0l60 40M60 0 0 40" stroke="#fff" stroke-width="8"/><path d="M0 0l60 40M60 0 0 40" stroke="#c8102e" stroke-width="3"/><path d="M30 0v40M0 20h60" stroke="#fff" stroke-width="12"/><path d="M30 0v40M0 20h60" stroke="#c8102e" stroke-width="7"/></svg>',
+  ca: '<svg class="flag" viewBox="0 0 27 18"><rect width="27" height="18" fill="#fcdd09"/><path d="M0 3h27M0 7h27M0 11h27M0 15h27" stroke="#da121a" stroke-width="2"/></svg>',
+  fr: '<svg class="flag" viewBox="0 0 30 20"><rect width="10" height="20" fill="#002654"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce1126"/></svg>',
+  de: '<svg class="flag" viewBox="0 0 30 18"><rect width="30" height="6" fill="#000"/><rect y="6" width="30" height="6" fill="#dd0000"/><rect y="12" width="30" height="6" fill="#ffce00"/></svg>',
+  it: '<svg class="flag" viewBox="0 0 30 20"><rect width="10" height="20" fill="#009246"/><rect x="10" width="10" height="20" fill="#fff"/><rect x="20" width="10" height="20" fill="#ce2b37"/></svg>',
+  pt: '<svg class="flag" viewBox="0 0 30 20"><rect width="30" height="20" fill="#da291c"/><rect width="12" height="20" fill="#046a38"/><circle cx="12" cy="10" r="4.2" fill="#ffe900"/><circle cx="12" cy="10" r="2.6" fill="#da291c"/></svg>'
+};
+
+const UI = {
+  beta:      {es:"Web en pruebas: los juegos son prototipos y todo puede cambiar.", en:"Test site: the games are prototypes and anything may change.", ca:"Web en proves: els jocs són prototips i tot pot canviar.", fr:"Site en test : les jeux sont des prototypes et tout peut changer.", de:"Testseite: Die Spiele sind Prototypen, alles kann sich ändern.", it:"Sito in prova: i giochi sono prototipi e tutto può cambiare.", pt:"Site em testes: os jogos são protótipos e tudo pode mudar."},
+  navGames:  {es:"Juegos", en:"Games", ca:"Jocs", fr:"Jeux", de:"Spiele", it:"Giochi", pt:"Jogos"},
+  navIdeas:  {es:"Ideas", en:"Ideas", ca:"Idees", fr:"Idées", de:"Ideen", it:"Idee", pt:"Ideias"},
+  games:     {es:"Juegos", en:"Games", ca:"Jocs", fr:"Jeux", de:"Spiele", it:"Giochi", pt:"Jogos"},
+  gamesSub:  {es:"Pruébalos y cuéntanos", en:"Try them and tell us", ca:"Prova'ls i explica'ns-ho", fr:"Essayez-les et dites-nous", de:"Probier sie aus und erzähl uns", it:"Provali e raccontaci", pt:"Experimenta e conta-nos"},
+  open:      {es:"Ver juego", en:"View game", ca:"Veure el joc", fr:"Voir le jeu", de:"Zum Spiel", it:"Vedi il gioco", pt:"Ver jogo"},
+  close:     {es:"Cerrar", en:"Close", ca:"Tanca", fr:"Fermer", de:"Schließen", it:"Chiudi", pt:"Fechar"},
+  proto:     {es:"Prototipo", en:"Prototype", ca:"Prototip", fr:"Prototype", de:"Prototyp", it:"Prototipo", pt:"Protótipo"},
+  early:     {es:"En desarrollo", en:"In development", ca:"En desenvolupament", fr:"En développement", de:"In Entwicklung", it:"In sviluppo", pt:"Em desenvolvimento"},
+  tryIt:     {es:"Pruébalo", en:"Try it", ca:"Prova'l", fr:"À essayer", de:"Testbar", it:"Provalo", pt:"Experimenta"},
+  soon:      {es:"Próximamente", en:"Coming soon", ca:"Properament", fr:"Bientôt", de:"Demnächst", it:"Prossimamente", pt:"Em breve"},
+  video:     {es:"Así se juega", en:"Gameplay", ca:"Així es juga", fr:"Gameplay", de:"So spielt es sich", it:"Gameplay", pt:"Assim se joga"},
+  videoNote: {es:"vídeo real · sin sonido", en:"real footage · muted", ca:"vídeo real · sense so", fr:"vidéo réelle · sans son", de:"echte Aufnahme · ohne Ton", it:"video reale · senza audio", pt:"vídeo real · sem som"},
+  demos:     {es:"Pruébalo", en:"Try it", ca:"Prova'l", fr:"Essayez-le", de:"Ausprobieren", it:"Provalo", pt:"Experimenta"},
+  scan:      {es:"o escanéalo con el móvil", en:"or scan it with your phone", ca:"o escaneja'l amb el mòbil", fr:"ou scannez-le avec votre téléphone", de:"oder mit dem Handy scannen", it:"o scansionalo con il telefono", pt:"ou lê com o telemóvel"},
+  play:      {es:"Jugar en el navegador", en:"Play in the browser", ca:"Juga al navegador", fr:"Jouer dans le navigateur", de:"Im Browser spielen", it:"Gioca nel browser", pt:"Jogar no navegador"},
+  playProto: {es:"Abrir el prototipo", en:"Open the prototype", ca:"Obre el prototip", fr:"Ouvrir le prototype", de:"Prototyp öffnen", it:"Apri il prototipo", pt:"Abrir o protótipo"},
+  download:  {es:"Descargar", en:"Download", ca:"Descarrega", fr:"Télécharger", de:"Herunterladen", it:"Scarica", pt:"Transferir"},
+  warnApk:   {es:"Prototipo sin firmar y fuera de Google Play: Android pedirá permitir apps de origen desconocido. Bajo tu responsabilidad.", en:"Unsigned prototype, not on Google Play: Android will ask you to allow unknown apps. Use at your own risk.", ca:"Prototip sense signar i fora de Google Play: Android demanarà permetre apps d'origen desconegut. Sota la teva responsabilitat.", fr:"Prototype non signé, hors Google Play : Android demandera d'autoriser les sources inconnues. À vos risques.", de:"Unsigniertes Testmuster, nicht im Play Store: Android fragt nach „Unbekannte Apps zulassen“. Auf eigene Gefahr.", it:"Prototipo non firmato e fuori da Google Play: Android chiederà di consentire app sconosciute. A tuo rischio.", pt:"Protótipo não assinado e fora da Google Play: o Android pedirá para permitir apps desconhecidas. Por tua conta e risco."},
+  warnBin:   {es:"Prototipo para Linux (64 bits). Descomprime y ejecuta Rodamons.x86_64. Teclado o mandos, de 1 a 4. Bajo tu responsabilidad.", en:"Prototype for 64-bit Linux. Unpack and run Rodamons.x86_64. Keyboard or gamepads, 1 to 4 players. Use at your own risk.", ca:"Prototip per a Linux (64 bits). Descomprimeix i executa Rodamons.x86_64. Teclat o comandaments, d'1 a 4. Sota la teva responsabilitat.", fr:"Prototype pour Linux 64 bits. Décompressez et lancez Rodamons.x86_64. Clavier ou manettes, de 1 à 4. À vos risques.", de:"Prototyp für 64-Bit-Linux. Entpacken und Rodamons.x86_64 starten. Tastatur oder Controller, 1 bis 4. Auf eigene Gefahr.", it:"Prototipo per Linux a 64 bit. Estrai ed esegui Rodamons.x86_64. Tastiera o controller, da 1 a 4. A tuo rischio.", pt:"Protótipo para Linux 64 bits. Descomprime e executa Rodamons.x86_64. Teclado ou comandos, de 1 a 4. Por tua conta e risco."},
+  warnWeb:   {es:"Mejor en el móvil, en vertical. Tarda unos segundos en cargar (40 MB).", en:"Best on a phone, held upright. Takes a few seconds to load (40 MB).", ca:"Millor al mòbil, en vertical. Triga uns segons a carregar (40 MB).", fr:"Idéal sur téléphone, à la verticale. Quelques secondes de chargement (40 Mo).", de:"Am besten auf dem Handy, hochkant. Lädt ein paar Sekunden (40 MB).", it:"Meglio sul telefono, in verticale. Ci mette qualche secondo a caricare (40 MB).", pt:"Melhor no telemóvel, na vertical. Demora uns segundos a carregar (40 MB)."},
+  warnProto: {es:"Prototipo web, mejor con Chrome en Android. Pide la cámara solo dentro del juego.", en:"Web prototype, best in Chrome on Android. It asks for the camera only inside the game.", ca:"Prototip web, millor amb Chrome a Android. Demana la càmera només dins del joc.", fr:"Prototype web, idéal sous Chrome Android. La caméra n'est demandée que dans le jeu.", de:"Web-Prototyp, am besten mit Chrome auf Android. Die Kamera wird nur im Spiel angefragt.", it:"Prototipo web, meglio con Chrome su Android. Chiede la fotocamera solo nel gioco.", pt:"Protótipo web, melhor no Chrome em Android. Só pede a câmara dentro do jogo."},
+  rateTitle: {es:"¿Qué te ha parecido?", en:"What did you think?", ca:"Què t'ha semblat?", fr:"Qu'en avez-vous pensé ?", de:"Wie fandest du es?", it:"Che ne pensi?", pt:"O que achaste?"},
+  rateSub:   {es:"solo si lo has probado", en:"only if you tried it", ca:"només si l'has provat", fr:"seulement si vous l'avez essayé", de:"nur wenn du es probiert hast", it:"solo se l'hai provato", pt:"só se experimentaste"},
+  rateHow:   {es:"¿Qué funciona y qué mejorarías? (opcional)", en:"What works and what would you improve? (optional)", ca:"Què funciona i què milloraries? (opcional)", fr:"Qu'est-ce qui marche et que changeriez-vous ? (facultatif)", de:"Was klappt, was würdest du verbessern? (optional)", it:"Cosa funziona e cosa miglioreresti? (facoltativo)", pt:"O que funciona e o que melhorarias? (opcional)"},
+  fbTitle:   {es:"Buzón de ideas", en:"Idea box", ca:"Bústia d'idees", fr:"Boîte à idées", de:"Ideenbox", it:"Cassetta delle idee", pt:"Caixa de ideias"},
+  fbMech:    {es:"Una mecánica o una mejora", en:"A mechanic or an improvement", ca:"Una mecànica o una millora", fr:"Une mécanique ou une amélioration", de:"Eine Mechanik oder Verbesserung", it:"Una meccanica o un miglioramento", pt:"Uma mecânica ou uma melhoria"},
+  fbMechSub: {es:"Para uno de estos juegos", en:"For one of these games", ca:"Per a un d'aquests jocs", fr:"Pour l'un de ces jeux", de:"Für eines dieser Spiele", it:"Per uno di questi giochi", pt:"Para um destes jogos"},
+  fbNew:     {es:"Un juego nuevo", en:"A new game", ca:"Un joc nou", fr:"Un nouveau jeu", de:"Ein neues Spiel", it:"Un nuovo gioco", pt:"Um jogo novo"},
+  fbNewSub:  {es:"¿Qué te gustaría jugar?", en:"What would you like to play?", ca:"A què t'agradaria jugar?", fr:"À quoi aimeriez-vous jouer ?", de:"Was würdest du gern spielen?", it:"A cosa ti piacerebbe giocare?", pt:"O que gostavas de jogar?"},
+  fGame:     {es:"Juego", en:"Game", ca:"Joc", fr:"Jeu", de:"Spiel", it:"Gioco", pt:"Jogo"},
+  anyGame:   {es:"Cualquiera / todos", en:"Any / all", ca:"Qualsevol / tots", fr:"N'importe lequel / tous", de:"Egal / alle", it:"Qualsiasi / tutti", pt:"Qualquer / todos"},
+  fName:     {es:"Tu nombre o apodo (opcional)", en:"Your name or nickname (optional)", ca:"El teu nom o sobrenom (opcional)", fr:"Votre nom ou pseudo (facultatif)", de:"Dein Name oder Spitzname (optional)", it:"Il tuo nome o soprannome (facoltativo)", pt:"O teu nome ou alcunha (opcional)"},
+  fIdea:     {es:"Tu idea", en:"Your idea", ca:"La teva idea", fr:"Votre idée", de:"Deine Idee", it:"La tua idea", pt:"A tua ideia"},
+  send:      {es:"Enviar", en:"Send", ca:"Envia", fr:"Envoyer", de:"Senden", it:"Invia", pt:"Enviar"},
+  sent:      {es:"¡Recibido! Gracias.", en:"Got it! Thanks.", ca:"Rebut! Gràcies.", fr:"Bien reçu, merci !", de:"Angekommen, danke!", it:"Ricevuto, grazie!", pt:"Recebido! Obrigado."},
+  empty:     {es:"Escribe algo o elige una carita.", en:"Write something or pick a face.", ca:"Escriu alguna cosa o tria una careta.", fr:"Écrivez quelque chose ou choisissez un visage.", de:"Schreib etwas oder wähle ein Gesicht.", it:"Scrivi qualcosa o scegli una faccina.", pt:"Escreve algo ou escolhe uma carinha."},
+  emptyIdea: {es:"Escribe tu idea primero.", en:"Write your idea first.", ca:"Escriu primer la teva idea.", fr:"Écrivez d'abord votre idée.", de:"Schreib zuerst deine Idee.", it:"Scrivi prima la tua idea.", pt:"Escreve primeiro a tua ideia."},
+  sending:   {es:"Enviando…", en:"Sending…", ca:"Enviant…", fr:"Envoi…", de:"Wird gesendet…", it:"Invio…", pt:"A enviar…"},
+  failed:    {es:"No se ha podido enviar. Prueba otra vez más tarde.", en:"Couldn't send it. Please try again later.", ca:"No s'ha pogut enviar. Torna-ho a provar més tard.", fr:"Envoi impossible. Réessayez plus tard.", de:"Senden fehlgeschlagen. Bitte später erneut versuchen.", it:"Invio non riuscito. Riprova più tardi.", pt:"Não foi possível enviar. Tenta mais tarde."},
+  privacy:   {es:"Solo guardamos lo que escribes y el idioma. Sin cuentas, sin cookies, sin publicidad.", en:"We only keep what you write and the language. No accounts, no cookies, no ads.", ca:"Només desem el que escrius i l'idioma. Sense comptes, sense galetes, sense publicitat.", fr:"Nous ne gardons que votre message et la langue. Sans compte, sans cookies, sans publicité.", de:"Wir speichern nur deinen Text und die Sprache. Kein Konto, keine Cookies, keine Werbung.", it:"Salviamo solo ciò che scrivi e la lingua. Niente account, cookie o pubblicità.", pt:"Só guardamos o que escreves e o idioma. Sem contas, sem cookies, sem publicidade."},
+  footer:    {es:"Juegos pequeños hechos en casa · Web en pruebas · Sin publicidad", en:"Small games made at home · Test site · No ads", ca:"Jocs petits fets a casa · Web en proves · Sense publicitat", fr:"Petits jeux faits maison · Site en test · Sans publicité", de:"Kleine Spiele aus dem Wohnzimmer · Testseite · Ohne Werbung", it:"Piccoli giochi fatti in casa · Sito in prova · Senza pubblicità", pt:"Jogos pequenos feitos em casa · Site em testes · Sem publicidade"}
+};
+
+const PLAT = {
+  linux:   {ico:"i-term",  name:"Linux"},
+  windows: {ico:"i-win",   name:"Windows"},
+  android: {ico:"i-droid", name:"Android"},
+  ios:     {ico:"i-phone", name:"iOS"},
+  web:     {ico:"i-globe", name:"Web"}
+};
+
+const GAMES = [
+  { id:"rodamons", name:"Rodamons", glow:"rgba(255,170,60,.55)", stage:"proto", players:"1–4", tall:false,
+    genre:{es:"Karts arcade", en:"Arcade kart racer", ca:"Karts arcade", fr:"Course de karts arcade", de:"Arcade-Kartrennen", it:"Kart arcade", pt:"Karts arcade"},
+    desc:{es:"Carreras locas de karts de juguete para 1 a 4 jugadores en la misma pantalla. Derrapa, coge cajas regalo y lanza objetos a tus amigos.",
+      en:"Wild toy-kart races for 1 to 4 players on one screen. Drift, grab gift boxes and throw items at your friends.",
+      ca:"Curses boges de karts de joguina per a 1 a 4 jugadors a la mateixa pantalla. Derrapa, agafa capses regal i llança objectes als amics.",
+      fr:"Des courses folles de karts-jouets pour 1 à 4 joueurs sur le même écran. Dérapez, ramassez les cadeaux et bombardez vos amis.",
+      de:"Verrückte Spielzeug-Kartrennen für 1 bis 4 Spieler an einem Bildschirm. Driften, Geschenke schnappen, Freunde abschießen.",
+      it:"Corse pazze di kart giocattolo da 1 a 4 giocatori sullo stesso schermo. Derapa, prendi i pacchi regalo e lancia oggetti agli amici.",
+      pt:"Corridas loucas de karts de brincar para 1 a 4 jogadores no mesmo ecrã. Derrapa, apanha caixas-presente e atira objetos aos amigos."},
+    demos:[{plat:"linux", kind:"dl", url:REL + "Rodamons-linux-x86_64.tar.gz", size:"42 MB", warn:"warnBin"}, {plat:"windows"}] },
+  { id:"narthex", name:"Narthex", glow:"rgba(80,255,150,.45)", stage:"early", players:"1", tall:true,
+    genre:{es:"Aventura con realidad aumentada", en:"Augmented-reality adventure", ca:"Aventura amb realitat augmentada", fr:"Aventure en réalité augmentée", de:"Augmented-Reality-Abenteuer", it:"Avventura in realtà aumentata", pt:"Aventura com realidade aumentada"},
+    desc:{es:"Encuentras un móvil roto que deja ver lo que se esconde detrás del mundo. A través de su cámara, tu casa se convierte en código.",
+      en:"You find a broken phone that lets you see what hides behind the world. Through its camera, your home turns into code.",
+      ca:"Trobes un mòbil trencat que deixa veure el que s'amaga darrere del món. A través de la seva càmera, casa teva es converteix en codi.",
+      fr:"Vous trouvez un téléphone cassé qui laisse voir ce qui se cache derrière le monde. À travers sa caméra, votre maison devient du code.",
+      de:"Du findest ein kaputtes Handy, das zeigt, was sich hinter der Welt verbirgt. Durch seine Kamera wird dein Zuhause zu Code.",
+      it:"Trovi un telefono rotto che lascia vedere cosa si nasconde dietro il mondo. Attraverso la sua fotocamera, casa tua diventa codice.",
+      pt:"Encontras um telemóvel partido que deixa ver o que se esconde por trás do mundo. Através da câmara, a tua casa vira código."},
+    demos:[{plat:"android", kind:"dl", url:REL + "Narthex-android-prototipo.apk", size:"110 MB", warn:"warnApk"}, {plat:"web", kind:"proto", url:"https://mengerspong3.github.io/fosforo/", warn:"warnProto"}, {plat:"ios"}] },
+  { id:"fractalblast", name:"FractalBlast", glow:"rgba(99,230,255,.5)", stage:"proto", players:"1", tall:true,
+    genre:{es:"Matamarcianos con mates", en:"Math shoot 'em up", ca:"Matamarcians amb mates", fr:"Shoot'em up mathématique", de:"Mathe-Shoot-'em-up", it:"Sparatutto con la matematica", pt:"Shoot 'em up com matemática"},
+    desc:{es:"Un matamarcianos para el móvil donde las mates son el arma: dispara a la respuesta correcta y parte asteroides en sus factores primos.",
+      en:"A phone shooter where math is the weapon: shoot the right answer and split asteroids into their prime factors.",
+      ca:"Un matamarcians per al mòbil on les mates són l'arma: dispara a la resposta correcta i trenca asteroides en factors primers.",
+      fr:"Un shoot'em up pour mobile où les maths sont l'arme : tirez sur la bonne réponse et brisez les astéroïdes en facteurs premiers.",
+      de:"Ein Handy-Shooter, in dem Mathe die Waffe ist: Schieß auf die richtige Antwort und zerleg Asteroiden in Primfaktoren.",
+      it:"Uno sparatutto per il telefono dove la matematica è l'arma: colpisci la risposta giusta e spezza gli asteroidi nei fattori primi.",
+      pt:"Um shoot 'em up para telemóvel em que a matemática é a arma: dispara na resposta certa e parte asteroides nos fatores primos."},
+    demos:[{plat:"web", kind:"play", url:"play/fractalblast/", warn:"warnWeb"}] },
+  { id:"mathdungeon", name:"MathDungeon", glow:"rgba(190,110,255,.5)", stage:"early", players:"1", tall:false,
+    genre:{es:"Mazmorra con mates", en:"Math dungeon crawler", ca:"Masmorra amb mates", fr:"Donjon mathématique", de:"Mathe-Dungeon", it:"Dungeon matematico", pt:"Masmorra com matemática"},
+    desc:{es:"Baja a la mazmorra y vence a un vampiro al que solo hieres acertando preguntas de mates. Fallar no quita vida, solo la recompensa.",
+      en:"Go down the dungeon and beat a vampire you can only hurt with right math answers. Wrong answers never cost health, only the reward.",
+      ca:"Baixa a la masmorra i venç un vampir que només fereixes encertant preguntes de mates. Fallar no treu vida, només la recompensa.",
+      fr:"Descendez au donjon et battez un vampire qu'on ne blesse qu'avec les bonnes réponses. Se tromper ne coûte pas de vie, juste la récompense.",
+      de:"Steig in den Dungeon und besiege einen Vampir, den nur richtige Mathe-Antworten verletzen. Fehler kosten kein Leben, nur die Belohnung.",
+      it:"Scendi nel dungeon e sconfiggi un vampiro che ferisci solo con risposte giuste. Sbagliare non toglie vita, solo la ricompensa.",
+      pt:"Desce à masmorra e vence um vampiro que só feres acertando perguntas de matemática. Errar não tira vida, só a recompensa."},
+    demos:[{plat:"linux"}, {plat:"windows"}, {plat:"web"}] }
+];
+
+let lang = "es";
+const $ = (s, r = document) => r.querySelector(s);
+const esc = s => String(s).replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const t = k => (UI[k] && (UI[k][lang] || UI[k].es)) || k;
+const L = o => (o && (o[lang] || o.es)) || "";
+const ico = (id, cls = "ico") => `<svg class="${cls}" aria-hidden="true"><use href="#${id}"/></svg>`;
+const store = { get(k) { try { return localStorage.getItem(k); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, v); } catch {} } };
+const playable = g => g.demos.some(d => d.url);
+const absUrl = u => /^https?:/.test(u) ? u : SITE + u;
+
+(function logo() {
+  let h = "";
+  const hole = (x, y) => { while (x || y) { if (x % 3 === 1 && y % 3 === 1) return true; x = Math.floor(x / 3); y = Math.floor(y / 3); } return false; };
+  for (let y = 0; y < 9; y++) for (let x = 0; x < 9; x++) if (!hole(x, y)) {
+    const warm = (x + y) % 4 === 0;
+    h += `<rect x="${x*3}" y="${y*3}" width="2.4" height="2.4" rx=".5" fill="${warm ? "#ffb547" : "#63e6ff"}"/>`;
+  }
+  $("#logo").innerHTML = h;
+})();
+
+/* escaparate */
+let slideIdx = 0, slideTimer = null;
+function renderStage() {
+  const stage = $("#stage"), dots = $("#dots");
+  GAMES.forEach((g, i) => {
+    const s = document.createElement("div");
+    s.className = "slide";
+    s.innerHTML = `<img src="img/${g.id}-banner.webp" alt="${esc(g.name)}" ${i ? 'loading="lazy"' : ""}>`;
+    stage.insertBefore(s, dots);
+    const b = document.createElement("button");
+    b.setAttribute("aria-label", g.name);
+    b.onclick = () => { showSlide(i); restartTimer(); };
+    dots.appendChild(b);
+  });
+}
+function showSlide(i) {
+  slideIdx = (i + GAMES.length) % GAMES.length;
+  $("#stage").querySelectorAll(".slide").forEach((s, k) => s.classList.toggle("on", k === slideIdx));
+  [...$("#dots").children].forEach((d, k) => d.classList.toggle("on", k === slideIdx));
+  const g = GAMES[slideIdx];
+  $("#stageChips").innerHTML = `<span class="chip hot">${ico("i-pad")}${esc(L(g.genre))}</span><span class="chip stage-chip">${ico("i-flask")}${esc(t(g.stage))}</span>` +
+    (playable(g) ? `<span class="chip">${ico("i-play")}${esc(t("tryIt"))}</span>` : "");
+  $("#stageOpen").onclick = () => openGame(g.id);
+}
+function restartTimer() {
+  clearInterval(slideTimer);
+  if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  slideTimer = setInterval(() => { if (!document.hidden && $("#sheet").hidden) showSlide(slideIdx + 1); }, 6000);
+}
+
+/* estantería: el vídeo asoma al pasar el ratón */
+function renderShelf() {
+  $("#shelf").innerHTML = GAMES.map(g => `
+    <button class="card" style="--glow:${g.glow}" data-open="${g.id}" aria-label="${esc(g.name)} · ${esc(L(g.genre))}">
+      <img src="img/${g.id}-poster.webp" alt="" loading="lazy">
+      <video muted loop playsinline preload="none" data-src="video/${g.id}.mp4"></video>
+      <span class="meta">
+        <span class="try ${playable(g) ? "" : "soon"}">${playable(g) ? ico("i-play") + esc(t("tryIt")) : esc(t("soon"))}</span>
+        <span class="plats">${[...new Set(g.demos.map(d => d.plat))].map(p => ico(PLAT[p].ico)).join("")}</span>
+      </span>
+    </button>`).join("");
+  const hover = matchMedia("(hover: hover)").matches && !matchMedia("(prefers-reduced-motion: reduce)").matches;
+  $("#shelf").querySelectorAll(".card").forEach(c => {
+    c.onclick = () => openGame(c.dataset.open);
+    if (!hover) return;
+    const v = c.querySelector("video");
+    c.addEventListener("mouseenter", () => { if (!v.src) v.src = v.dataset.src; v.play().then(() => c.classList.add("playing")).catch(() => {}); });
+    c.addEventListener("mouseleave", () => { c.classList.remove("playing"); v.pause(); });
+  });
+}
+
+/* ficha */
+let current = null, lastFocus = null, rating = 0;
+function openGame(id, fromHash) {
+  if (!GAMES.some(g => g.id === id)) return;
+  current = id; rating = 0;
+  if (!fromHash) { lastFocus = document.activeElement; try { history.replaceState(null, "", "#" + id); } catch {} }
+  renderSheet();
+  $("#sheet").hidden = false; $("#sheet").scrollTop = 0;
+  document.body.style.overflow = "hidden";
+  $("#sheetClose").focus();
+}
+function closeGame() {
+  current = null;
+  const v = $("#sheetBody video"); if (v) v.pause();
+  $("#sheet").hidden = true; document.body.style.overflow = "";
+  try { history.replaceState(null, "", location.pathname + location.search); } catch {}
+  if (lastFocus) lastFocus.focus();
+}
+function renderSheet() {
+  const g = GAMES.find(x => x.id === current); if (!g) return;
+  const demos = g.demos.map(d => {
+    const pl = PLAT[d.plat];
+    if (!d.url) return `<div class="demo soon"><div class="top">${ico(pl.ico)}${pl.name}</div><svg class="cone" viewBox="0 0 64 64" aria-hidden="true"><use href="#cone"/></svg><span class="lbl">${esc(t("soon"))}</span></div>`;
+    const label = d.kind === "play" ? t("play") : d.kind === "proto" ? t("playProto") : t("download") + (d.size ? " · " + d.size : "");
+    return `<div class="demo"><div class="top">${ico(pl.ico)}${pl.name}</div>
+      <a class="btn ${d.kind === "dl" ? "" : "amber"}" href="${esc(d.url)}" target="_blank" rel="noopener">${ico(d.kind === "dl" ? "i-dl" : "i-play")}${esc(label)}</a>
+      <div class="qr" data-qr="${esc(absUrl(d.url))}" title="${esc(t("scan"))}"></div>
+      ${d.warn ? `<span class="warn">${ico("i-alert")}<span>${esc(t(d.warn))}</span></span>` : ""}</div>`;
+  }).join("");
+  const faces = [1,2,3,4,5].map(n => `<button type="button" data-rate="${n}" aria-pressed="false" aria-label="${n}/5"><svg viewBox="0 0 32 32"><use href="#f${n}"/></svg></button>`).join("");
+  $("#sheetBody").innerHTML = `
+    <div class="backdrop"><img src="img/${g.id}-banner.webp" alt=""></div>
+    <div class="wrap">
+      <div class="head">
+        <div class="poster"><img src="img/${g.id}-poster.webp" alt="${esc(g.name)}"></div>
+        <div style="min-width:0">
+          <h1 id="sheetTitle">${esc(g.name)}</h1>
+          <div class="chips">
+            <span class="chip hot">${ico("i-pad")}${esc(L(g.genre))}</span>
+            <span class="chip stage-chip">${ico("i-flask")}${esc(t(g.stage))}</span>
+            <span class="chip">${ico("i-users")}${esc(g.players)}</span>
+          </div>
+        </div>
+        <p class="lead">${esc(L(g.desc))}</p>
+      </div>
+      <div class="blocks">
+        <section class="blk wide">
+          <h3>${ico("i-film")}${esc(t("video"))}<small>${esc(t("videoNote"))}</small></h3>
+          <div class="player ${g.tall ? "tall" : ""}"><video src="video/${g.id}.mp4" poster="video/${g.id}.jpg" muted loop playsinline autoplay controls preload="metadata"></video></div>
+        </section>
+        <section class="blk">
+          <h3>${ico("i-play")}${esc(t("demos"))}<small>${esc(t("scan"))}</small></h3>
+          <div class="demos">${demos}</div>
+        </section>
+        <section class="blk">
+          <h3>${ico("i-msg")}${esc(t("rateTitle"))}<small>${esc(t("rateSub"))}</small></h3>
+          <form class="fb" id="rateForm" novalidate style="margin:0;padding:0;border:0;background:none">
+            <div class="rate">${faces}</div>
+            <label class="f"><span>${esc(t("rateHow"))}</span><textarea id="rateText" maxlength="2000"></textarea></label>
+            <label class="f"><span>${esc(t("fName"))}</span><input id="rateName" maxlength="60" autocomplete="nickname"></label>
+            <input class="honey" id="rateHoney" tabindex="-1" autocomplete="off" aria-hidden="true">
+            <div class="acts"><button class="btn amber" type="submit">${ico("i-arrow")}${esc(t("send"))}</button><span class="msg" id="rateMsg" role="status"></span></div>
+          </form>
+        </section>
+      </div>
+    </div>`;
+  $("#sheetBody").querySelectorAll("[data-rate]").forEach(b => b.onclick = () => {
+    rating = +b.dataset.rate;
+    $("#sheetBody").querySelectorAll("[data-rate]").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  });
+  $("#rateForm").onsubmit = async e => {
+    e.preventDefault();
+    const text = $("#rateText").value.trim();
+    if (!rating && !text) return setMsg("#rateMsg", t("empty"), "err");
+    const ok = await send({ _subject: `[Menger] ${g.name}: ${rating ? rating + "/5" : "opinión"}`, tipo: "opinión", juego: g.name, nota: rating ? rating + "/5" : "-", mensaje: text || "-", nombre: $("#rateName").value.trim() || "-" }, $("#rateHoney").value, "#rateMsg");
+    if (ok) { $("#rateText").value = ""; }
+  };
+  $("#sheetBody").querySelectorAll("[data-qr]").forEach(el => {
+    if (typeof QRCode === "undefined") return;
+    new QRCode(el, { text: el.dataset.qr, width: 256, height: 256, colorDark: "#07080f", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.M });
+    const img = el.querySelector("img"); if (img) img.alt = "QR";
+  });
+}
+$("#sheetClose").onclick = closeGame;
+document.addEventListener("keydown", e => { if (e.key === "Escape" && !$("#sheet").hidden) closeGame(); });
+
+/* envío */
+function setMsg(sel, txt, cls = "") { const m = $(sel); if (m) { m.textContent = txt; m.className = "msg " + cls; } }
+async function send(fields, honey, msgSel) {
+  if (honey) { setMsg(msgSel, t("sent"), "ok"); return true; }
+  setMsg(msgSel, t("sending"));
+  try {
+    const r = await fetch(FORM_URL, { method: "POST", headers: { "Content-Type": "application/json", Accept: "application/json" },
+      body: JSON.stringify({ ...fields, idioma: lang, _template: "table", _captcha: "false" }) });
+    const j = await r.json().catch(() => ({}));
+    if (r.ok && String(j.success) !== "false") { setMsg(msgSel, t("sent"), "ok"); return true; }
+    throw new Error(j.message || r.status);
+  } catch (err) { setMsg(msgSel, t("failed"), "err"); return false; }
+}
+
+let kind = "mecanica";
+document.querySelectorAll(".fb-pick").forEach(b => b.onclick = () => {
+  kind = b.dataset.kind;
+  document.querySelectorAll(".fb-pick").forEach(x => x.setAttribute("aria-pressed", String(x === b)));
+  $("#ideaGameWrap").hidden = kind !== "mecanica";
+  setMsg("#ideaMsg", "");
+});
+function renderGameSelect() {
+  const v = $("#ideaGame").value;
+  $("#ideaGame").innerHTML = `<option value="-">${esc(t("anyGame"))}</option>` + GAMES.map(g => `<option value="${g.name}">${esc(g.name)}</option>`).join("");
+  if (v) $("#ideaGame").value = v;
+}
+$("#ideaForm").onsubmit = async e => {
+  e.preventDefault();
+  const text = $("#ideaText").value.trim();
+  if (!text) { setMsg("#ideaMsg", t("emptyIdea"), "err"); $("#ideaText").focus(); return; }
+  const game = kind === "mecanica" ? $("#ideaGame").value : "-";
+  const ok = await send({ _subject: kind === "mecanica" ? `[Menger] Idea: ${game === "-" ? "general" : game}` : "[Menger] Juego nuevo", tipo: kind === "mecanica" ? "mecánica / mejora" : "juego nuevo", juego: game, mensaje: text, nombre: $("#ideaName").value.trim() || "-" }, $("#ideaHoney").value, "#ideaMsg");
+  if (ok) $("#ideaText").value = "";
+};
+
+/* idioma */
+function renderLangUI() {
+  $("#langFlag").innerHTML = FLAGS[lang];
+  $("#langName").textContent = LANGS.find(l => l[0] === lang)[1];
+  $("#langMenu").innerHTML = LANGS.map(([c, n]) => `<li><button role="option" data-lang="${c}" aria-current="${c === lang}" lang="${c}">${FLAGS[c]}${n}</button></li>`).join("");
+  $("#footFlags").innerHTML = LANGS.map(([c, n]) => `<button data-lang="${c}" aria-current="${c === lang}" title="${n}" aria-label="${n}">${FLAGS[c]}</button>`).join("");
+  document.querySelectorAll("[data-lang]").forEach(b => b.onclick = () => { setLang(b.dataset.lang); toggleMenu(false); });
+}
+function toggleMenu(open) { const m = $("#langMenu"); open = open ?? m.hidden; m.hidden = !open; $("#langBtn").setAttribute("aria-expanded", String(open)); }
+$("#langBtn").onclick = e => { e.stopPropagation(); toggleMenu(); };
+document.addEventListener("click", e => { if (!e.target.closest(".lang")) toggleMenu(false); });
+function setLang(l) {
+  lang = LANGS.some(x => x[0] === l) ? l : "es";
+  store.set("ms-lang", lang);
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-t]").forEach(n => n.textContent = t(n.dataset.t));
+  renderLangUI(); showSlide(slideIdx); renderShelf(); renderGameSelect();
+  if (current) renderSheet();
+}
+
+function initialLang() {
+  const saved = store.get("ms-lang"); if (saved) return saved;
+  const nav = (navigator.language || "es").toLowerCase();
+  const hit = LANGS.find(([c]) => nav.startsWith(c));
+  return hit ? hit[0] : "en";
+}
+renderStage();
+setLang(initialLang());
+restartTimer();
+const h = location.hash.slice(1);
+if (GAMES.some(g => g.id === h)) openGame(h, true);
+})();
+</script>
+</body>
+</html>

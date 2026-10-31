@@ -1,0 +1,16 @@
+<!doctype html><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;height:100%;overflow:hidden;cursor:none}
+#c{position:absolute;left:50%;top:0;transform:translateX(-50%);width:608px;height:1080px;background:#000}</style>
+<canvas id="c"></canvas>
+<script src="ascii.js"></script><script src="corridor.js"></script>
+<script>
+const cam = AsciiCam(document.getElementById("c"), null);
+const cor = Corridor(); cam.source = cor; cam.cellPx = 15;
+let last = 0, lastStep = 0;
+function loop(t){ requestAnimationFrame(loop);
+  const dt = last ? (t-last)/1000 : 0; last = t;
+  cor.look(Math.cos(t/1500) * 14 * dt);
+  if (t - lastStep > 700) { lastStep = t; cor.step(); }
+  cam.render(t); }
+requestAnimationFrame(loop);
+</script>
