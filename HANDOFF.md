@@ -10,6 +10,9 @@
 - **Intranet:** Artifact privado https://claude.ai/artifact/R18NU6JsZhyoj2GF2ViqBc (estado, créditos, buzón propio). Código en el repo privado `mengerspong3/menger-studio-intranet` (clonar en `~/Projects/Jocs/MengerStudio/web/`). Enlaza a esta web; esta web no enlaza a la intranet.
   - Además de los 4 juegos tiene «Otros proyectos a medias»: EngineDuel (`mengerspong3/engineduel`) y Attic Notes (`mengerspong3/notas-rapidas` + prototipo Claude Notes como Artifact).
 
+## Prototipos de app
+- **Claude Notes** (notas rápidas, prototipo en Artifact): 8 capturas en `prototipos/claude-notes/` (lista, tarjetas y temas Suave, Oscuro, Claro, Sistema y Alto contraste). Descripción de cada una en su `README.md`. No está enlazado desde la web pública.
+
 ## Último trabajo hecho
 - 01-11: esta web pasa a ser la oficial; la antigua redirige aquí. Intranet subida a GitHub y enlazada aquí.
 - Vídeos (en `video/`, MP4 sin sonido):
