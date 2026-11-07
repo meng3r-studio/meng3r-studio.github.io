@@ -11,7 +11,7 @@ from pathlib import Path
 
 from PIL import Image, ImageDraw, ImageFilter, ImageFont
 
-JOCS = Path.home() / "Projects/Jocs"
+JOCS = Path.home() / "Projects/meng3r-studio"
 FONTS = Path(sys.argv[1])
 OUT = Path(sys.argv[2])
 OUT.mkdir(parents=True, exist_ok=True)
