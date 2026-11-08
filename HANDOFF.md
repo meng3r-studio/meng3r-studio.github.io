@@ -1,16 +1,17 @@
 # HANDOFF · Menger Studio (web)
 
-Última actualización: 01-11-2026 · Equipo: gargamel
+Última actualización: 08-11-2026 · Equipo: nube
 
 ## Estado actual
 - **Web pública (en pruebas):** https://meng3r-studio.github.io/ (repo `meng3r-studio/meng3r-studio.github.io`, GitHub Pages desde `main` /). **Es la web buena** (decisión de Luis, 01-11-2026). La antigua `mengerspong3.github.io/menger-studio/` solo redirige aquí. Verificada en móvil (375 px) y escritorio (1280 px), 7 idiomas, sin scroll lateral.
   - 4 juegos con carátula, vídeo corto de gameplay, «Pruébalo» con QR y opinión con caritas. Sin créditos ni licencias, sin enlaces a repos privados, sin publicidad ni cookies. Aviso «BETA» arriba.
   - FractalBlast jugable en `play/fractalblast/` (export web de Godot 4.7.2, sin hilos). Probado: arranca en móvil.
-  - Descargas: Rodamons Linux y APK de Narthex desde la release de `mengerspong3/menger-studio-builds`.
-- **Intranet:** Artifact privado https://claude.ai/artifact/R18NU6JsZhyoj2GF2ViqBc (estado, créditos, buzón propio). Código en el repo privado `mengerspong3/menger-studio-intranet` (clonar en `~/Projects/Jocs/MengerStudio/web/`). Enlaza a esta web; esta web no enlaza a la intranet.
-  - Además de los 4 juegos tiene «Otros proyectos a medias»: EngineDuel (`mengerspong3/engineduel`) y Attic Notes (`mengerspong3/notas-rapidas` + prototipo Claude Notes como Artifact).
+  - Descargas: Rodamons Linux y APK de Narthex desde la release de `meng3r-studio/menger-studio-builds`.
+- **Intranet:** Artifact privado https://claude.ai/artifact/R18NU6JsZhyoj2GF2ViqBc (estado, créditos, buzón propio). Código en el repo privado `meng3r-studio/menger-studio-intranet` (clonar en `~/Projects/meng3r-studio/`). Enlaza a esta web; esta web no enlaza a la intranet.
+  - Además de los 4 juegos tiene «Otros proyectos a medias»: EngineDuel (`Fibo-Lab/engineduel`) y Attic Notes (`Fibo-Lab/notas-rapidas` + prototipo Claude Notes como Artifact).
 
 ## Último trabajo hecho
+- 08-11: reorganización de GitHub reflejada aquí: repos en las orgs `meng3r-studio` y `Fibo-Lab`, rutas nuevas en `~/Projects/`.
 - 01-11: esta web pasa a ser la oficial; la antigua redirige aquí. Intranet subida a GitHub y enlazada aquí.
 - Vídeos (en `video/`, MP4 sin sonido):
   - Rodamons: build Linux con `-rd-players 1` y `-rd-players 4` (la IA conduce), grabado con `ffmpeg -f x11grab`.
@@ -25,4 +26,5 @@
 4. Builds de Windows (Rodamons) y web de MathDungeon para quitar «Próximamente».
 
 ## Dudas abiertas
+- `mengerspong3/menger-studio` (web antigua, solo redirige) sigue activo: decidir cuándo archivarlo.
 - Los sprites de MathDungeon sin origen claro (Enemy_Animations_Set, RPG_Hero) salen en el vídeo: Luis dijo incluirlo igual.
